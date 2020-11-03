@@ -7,8 +7,8 @@ from typing import Any, AsyncGenerator, Dict, Optional, Tuple, Union, cast
 import websockets
 from graphql import DocumentNode, ExecutionResult, print_ast
 from websockets.client import WebSocketClientProtocol
+from websockets.datastructures import HeadersLike
 from websockets.exceptions import ConnectionClosed
-from websockets.http import HeadersLike
 from websockets.typing import Data, Subprotocol
 
 from .async_transport import AsyncTransport

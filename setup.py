@@ -40,7 +40,7 @@ install_requests_requires = [
 ]
 
 install_websockets_requires = [
-    "websockets>=8.1,<9",
+    "websockets @ https://github.com/aaugustin/websockets/archive/master.zip"
 ]
 
 install_all_requires = (
