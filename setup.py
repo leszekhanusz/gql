@@ -9,6 +9,7 @@ install_requires = [
 
 scripts = [
     "scripts/gql-cli",
+    "scripts/gql-compiler",
 ]
 
 tests_requires = [
@@ -43,8 +44,12 @@ install_websockets_requires = [
     "websockets>=8.1,<9",
 ]
 
+install_compiler_requires = [
+    "dataclasses-json==0.3.2",
+]
+
 install_all_requires = (
-    install_aiohttp_requires + install_requests_requires + install_websockets_requires
+    install_aiohttp_requires + install_requests_requires + install_websockets_requires + install_compiler_requires
 )
 
 # Get version from __version__.py file
@@ -86,6 +91,7 @@ setup(
         "aiohttp": install_aiohttp_requires,
         "requests": install_requests_requires,
         "websockets": install_websockets_requires,
+        "compiler": install_compiler_requires,
     },
     include_package_data=True,
     zip_safe=False,
