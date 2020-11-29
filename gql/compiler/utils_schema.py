@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 import glob
-from enum import Enum
 import json
 import os
-import requests
+from enum import Enum
 from typing import Tuple
 
+import requests
 from graphql import (
+    GraphQLSchema,
     build_ast_schema,
     build_client_schema,
     get_introspection_query,
-    GraphQLSchema,
 )
-from graphql.language.parser import parse
-from graphql.language import OperationDefinitionNode, FragmentDefinitionNode
+from graphql.language import FragmentDefinitionNode, OperationDefinitionNode
 from graphql.language.ast import DocumentNode
+from graphql.language.parser import parse
 
 
 class QueryType(Enum):

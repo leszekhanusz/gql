@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
+from datetime import datetime
+from enum import Enum
 from typing import Any, Dict, Union
 
 from dataclasses_json import DataClassJsonMixin
-from datetime import datetime
-from enum import Enum
 
 from .datetime_utils import isoformat
 from .enum_utils import MissingEnumException

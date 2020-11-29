@@ -10,10 +10,7 @@ from .query_parser import (
     ParsedQuery,
     ParsedVariableDefinition,
 )
-from .utils_codegen import (
-    CodeChunk,
-    camel_case_to_lower_case,
-)
+from .utils_codegen import CodeChunk, camel_case_to_lower_case
 
 
 class DataclassesRenderer:
@@ -40,7 +37,8 @@ class DataclassesRenderer:
         buffer.write("from functools import partial")
         buffer.write("from numbers import Number")
         buffer.write(
-            "from typing import Any, AsyncGenerator, Callable, Dict, List, Generator, Optional"
+            "from typing import Any, AsyncGenerator, Callable, "
+            "Dict, List, Generator, Optional"
         )
         buffer.write("from time import perf_counter")
         buffer.write("from dataclasses_json import DataClassJsonMixin")
@@ -48,7 +46,8 @@ class DataclassesRenderer:
         for fragment_name in sorted(set(parsed_query.used_fragments)):
             importpath = fragment_name_to_importpath[fragment_name]
             buffer.write(
-                f"from {importpath} import {fragment_name}, QUERY as {fragment_name}Query"
+                f"from {importpath} import {fragment_name}, "
+                f"QUERY as {fragment_name}Query"
             )
         enum_names = set()
         for enum in parsed_query.enums:
@@ -137,11 +136,13 @@ class DataclassesRenderer:
             buffer.write("from datetime import datetime")
             buffer.write("from functools import partial")
             buffer.write(
-                "from gql.compiler.runtime.datetime_utils import DATETIME_FIELD_METADATA"
+                "from gql.compiler.runtime.datetime_utils "
+                "import DATETIME_FIELD_METADATA"
             )
             buffer.write("from numbers import Number")
             buffer.write(
-                "from typing import Any, AsyncGenerator, Callable, Dict, List, Generator, Optional"
+                "from typing import Any, AsyncGenerator, Callable, Dict, "
+                "List, Generator, Optional"
             )
             buffer.write("")
             buffer.write("from dataclasses_json import DataClassJsonMixin")
@@ -155,7 +156,8 @@ class DataclassesRenderer:
                 )
                 for enum_name in sorted(enum_names):
                     buffer.write(
-                        f"from ..enum.{camel_case_to_lower_case(enum_name)} import {enum_name}"
+                        f"from ..enum.{camel_case_to_lower_case(enum_name)} "
+                        f"import {enum_name}"
                     )
                 buffer.write("")
             input_object_names = set()

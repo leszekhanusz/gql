@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-from typing import Optional
-
 from datetime import datetime, timedelta, tzinfo
+from typing import Optional
 
 from marshmallow import fields as marshmallow_fields
 

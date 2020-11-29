@@ -5,7 +5,7 @@
 
 import glob
 import os
-from typing import Dict, Tuple, List
+from typing import Dict, List, Tuple
 
 from graphql import GraphQLSchema
 from graphql.language.parser import parse
@@ -15,7 +15,7 @@ from .constant import ENUM_DIRNAME, INPUT_DIRNAME
 from .query_parser import InvalidQueryError, QueryParser
 from .renderer_dataclasses import DataclassesRenderer
 from .utils_codegen import CodeChunk, camel_case_to_lower_case
-from .utils_schema import get_query_details, QueryType
+from .utils_schema import QueryType, get_query_details
 
 
 def assert_rendered_file(file_name: str, file_content: str, rendered: str) -> None:

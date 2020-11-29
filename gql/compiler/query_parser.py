@@ -311,7 +311,10 @@ class FieldToTypeMatcherVisitor(Visitor):
             "Cursor": "str",
         }
 
-        mapping_result = mapping.get(var_type.name.value, var_type.name.value)  # type: ignore
+        mapping_result = mapping.get(
+            var_type.name.value, var_type.name.value,  # type: ignore
+        )
+
         return mapping_result, nullable, is_list, var_type
 
 
@@ -328,10 +331,7 @@ class QueryParser:
         self.__jinja2_env = None
 
     def parse(
-        self,
-        query: str,
-        full_fragments: str = "",
-        should_validate: bool = True,
+        self, query: str, full_fragments: str = "", should_validate: bool = True,
     ) -> ParsedQuery:
         query_document_ast = parse("".join([full_fragments, query]))
         document_ast = parse(query)
