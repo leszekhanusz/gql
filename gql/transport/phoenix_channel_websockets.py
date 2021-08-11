@@ -241,6 +241,7 @@ class PhoenixChannelWebsocketsTransport(WebsocketsTransport):
                         subscription_id = str(response.get("subscriptionId"))
                         if unsubscribe_listener_id is not None:
 
+                            answer_id = unsubscribe_listener_id
                             answer_type = "complete"
 
                             if self.subscription_ids_to_query_ids.get(subscription_id) != unsubscribe_listener_id:
