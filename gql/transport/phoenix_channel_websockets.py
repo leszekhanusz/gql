@@ -229,6 +229,9 @@ class PhoenixChannelWebsocketsTransport(WebsocketsTransport):
 
                 status = str(payload.get("status"))
 
+                # Unsubscription reply?
+                unsubscribe_listener_id = self.unsubscribe_answer_ids.pop(answer_id, None)
+
                 if status == "ok":
 
                     answer_type = "reply"
@@ -236,14 +239,12 @@ class PhoenixChannelWebsocketsTransport(WebsocketsTransport):
 
                     if isinstance(response, dict) and "subscriptionId" in response:
                         subscription_id = str(response.get("subscriptionId"))
-                        if answer_id in self.unsubscribe_answer_ids:
-                            # Unsubscription reply
-                            listener_query_id = self.unsubscribe_answer_ids[answer_id]
-                            del self.unsubscribe_answer_ids[answer_id]
+                        if unsubscribe_listener_id is not None:
+
                             answer_type = "complete"
 
-                            if self.subscription_ids_to_query_ids.get(subscription_id) != listener_query_id:
-                                raise ValueError(f"Listener {listener_query_id} referenced in unsubscribe reply does not exist")
+                            if self.subscription_ids_to_query_ids.get(subscription_id) != unsubscribe_listener_id:
+                                raise ValueError(f"Listener {unsubscribe_listener_id} referenced in unsubscribe reply does not exist")
                         else:
                             # Subscription reply
                             self.subscription_ids_to_query_ids[subscription_id] = answer_id
