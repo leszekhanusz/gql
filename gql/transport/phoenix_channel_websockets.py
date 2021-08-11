@@ -32,10 +32,11 @@ class PhoenixChannelWebsocketsTransport(WebsocketsTransport):
         :param heartbeat_interval: Interval in second between each heartbeat messages
             sent by the client
         """
-        self.channel_name = channel_name
-        self.heartbeat_interval = heartbeat_interval
+        self.channel_name: str = channel_name
+        self.heartbeat_interval: float = heartbeat_interval
         self.heartbeat_task: Optional[asyncio.Future] = None
         self.subscription_ids_to_query_ids: Dict[str, int] = {}
+        self.unsubscribe_answer_ids: Dict[int, int] = {}
         super(PhoenixChannelWebsocketsTransport, self).__init__(*args, **kwargs)
 
     async def _send_init_message_and_wait_ack(self) -> None:
@@ -90,11 +91,35 @@ class PhoenixChannelWebsocketsTransport(WebsocketsTransport):
 
         self.heartbeat_task = asyncio.ensure_future(heartbeat_coro())
 
-    async def _send_stop_message(self, query_id: int) -> None:
-        try:
-            await self.listeners[query_id].put(("complete", None))
-        except KeyError:  # pragma: no cover
-            pass
+    async def _send_stop_message(self, listener_query_id: int) -> None:
+        """Send stop message to the provided websocket connection and query_id.
+
+        The server should afterwards return a 'complete' message.
+        """
+        query_id = self.next_query_id
+        self.next_query_id += 1
+
+        subscription_id = None
+        for sub_id, q_id in self.subscription_ids_to_query_ids.items():
+            if q_id == listener_query_id:
+                subscription_id = sub_id
+                break
+
+        if subscription_id is None:
+            raise ValueError(f"No subscription for {listener_query_id}")
+
+        # Save the ref so it can be matched in the reply
+        self.unsubscribe_answer_ids[query_id] = listener_query_id
+        stop_message = json.dumps(
+            {
+                "topic": self.channel_name,
+                "event": "unsubscribe",
+                "payload": {"subscriptionId": subscription_id},
+                "ref": query_id,
+            }
+        )
+
+        await self._send(stop_message)
 
     async def _send_connection_terminate_message(self) -> None:
         """Send a phx_leave message to disconnect from the provided channel.
@@ -211,7 +236,17 @@ class PhoenixChannelWebsocketsTransport(WebsocketsTransport):
 
                     if isinstance(response, dict) and "subscriptionId" in response:
                         subscription_id = str(response.get("subscriptionId"))
-                        self.subscription_ids_to_query_ids[subscription_id] = answer_id
+                        if answer_id in self.unsubscribe_answer_ids:
+                            # Unsubscription reply
+                            listener_query_id = self.unsubscribe_answer_ids[answer_id]
+                            del self.unsubscribe_answer_ids[answer_id]
+                            answer_type = "complete"
+
+                            if self.subscription_ids_to_query_ids.get(subscription_id) != listener_query_id:
+                                raise ValueError(f"Listener {listener_query_id} referenced in unsubscribe reply does not exist")
+                        else:
+                            # Subscription reply
+                            self.subscription_ids_to_query_ids[subscription_id] = answer_id
 
                 elif status == "error":
                     response = payload.get("response")
